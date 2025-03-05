@@ -195,4 +195,36 @@ public class MemberService {
 //		memberResDto.setRegDate(member.getRegDate());
 //		return memberResDto;
 //	}
+
+	/**
+	 * isAdmin 메서드
+	 * KR: 회원 ID를 받아 해당 회원의 authority 필드를 검사합니다.
+	 *     ROLE_ADMIN이면 true를 반환하여 관리자인지 확인합니다.
+	 *
+	 * @param memberId 회원 ID (Long)
+	 * @return true if the member is an admin, false otherwise.
+	 */
+	public boolean isAdmin(Long memberId) {
+		// 회원을 조회하고, authority가 ROLE_ADMIN이면 true 반환
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 회원 ID입니다: " + memberId));
+		return member.getAuthority() == Authority.ROLE_ADMIN;
+	}
+
+	// Optionally, if you want an overload that accepts a token:
+	/**
+	 * isAdmin 메서드 (토큰 사용)
+	 * KR: 토큰에서 회원을 추출한 후, 해당 회원의 authority를 검사하여 관리자 여부를 반환합니다.
+	 *
+	 * @param token 인증 토큰 (Bearer 토큰 포함 가능)
+	 * @return true if the extracted member is an admin, false otherwise.
+	 */
+	public boolean isAdmin(String token) {
+		Member member = convertTokenToEntity(token);
+		if (member == null) {
+			throw new IllegalArgumentException("토큰에서 회원 정보를 가져올 수 없습니다.");
+		}
+		return member.getAuthority() == Authority.ROLE_ADMIN;
+	}
+
 }

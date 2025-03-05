@@ -141,7 +141,7 @@ const CocktailListPage = () => {
   ];
 
   return (
-    <div className="px-4 py-8">
+    <div className="max-w-[1200px] mx-auto px-4 py-8">
       {/* 상단 영역 */}
       <header className="mb-8">
         <h1 className="text-2xl md:text-4xl font-bold mb-2 text-kakiBrown dark:text-softBeige">
