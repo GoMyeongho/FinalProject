@@ -11,6 +11,7 @@ import {
   Nickname,
   Introduce,
 } from "./style/ProfileStyle";
+import ProfileApi from "../../api/ProfileApi";
 
 // 나중에 유저 id값만 넣으면 알아서 서치 할 수 있도록 하는것이 목적
 const Profile = ({ userId, customStyle }) => {
@@ -31,14 +32,9 @@ const Profile = ({ userId, customStyle }) => {
   });
 
   useEffect(() => {
-    console.log("프로필 카드 조회할 유저 ID : ", userId);
     if (userId) {
-      // 프로필 데이터와 스타일 가져오기
-      console.log("프로필 카드 조회할 유저 ID : ", userId);
-      axiosInstance
-        .get(`/api/profile/${userId}`)
+      ProfileApi.getProfileCard(userId)
         .then((response) => {
-          console.log(response.data);
           const {
             nickName,
             memberImg,

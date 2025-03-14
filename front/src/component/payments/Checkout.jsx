@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import {
+  fetchMemberDetails,
+  createPurchaseRecord,
+} from "../../api/CheckoutApi";
 import "./style.css";
 import axiosInstance from "../../api/AxiosInstance";
 
@@ -20,8 +24,8 @@ export function CheckoutPage() {
   });
 
   useEffect(() => {
-    axiosInstance
-      .get(`/api/member/get`)
+    // ✅ API 호출로 구매자 정보 불러오기
+    fetchMemberDetails()
       .then((response) => {
         const { name, email } = response.data;
         setPaymentDetails((prevDetails) => ({
@@ -113,7 +117,7 @@ export function CheckoutPage() {
       // axios 요청과 결제 위젯 요청을 병렬로 처리
       await Promise.all([
         // PurchaseRecord 저장을 위한 POST 요청
-        axiosInstance.post("/api/purchase/create", purchaseRecordDto),
+        createPurchaseRecord(purchaseRecordDto),
 
         // 결제 요청
         widgets?.requestPayment({

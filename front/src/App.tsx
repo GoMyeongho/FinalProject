@@ -12,9 +12,6 @@ import ProfileEditPage from "./page/profile/edit/ProfileEditPage";
 import Layout from "./page/layout/Layout";
 import GlobalStyle from "./page/layout/style/GlobalStyle";
 import MainPage from "./page/main/MainPage";
-
-import RecipeUploader from "./page/AddRecipeDetail";
-
 import Forum from "./page/forum/Forum";
 import RecipeDetail from "./page/food/FoodRecipeDetail";
 import PostDetail from "./page/forum/PostDetail/PostDetail";
@@ -61,7 +58,6 @@ function App() {
               element={<ForumPosts />}
             />
 
-            <Route path="recipe/upload" element={<RecipeUploader />} />{" "}
             {/* 새로운 경로 추가 */}
           </Route>
           {/* 결제 페이지 */}

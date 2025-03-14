@@ -14,6 +14,7 @@ import {
   Input,
   Button,
 } from "./ProfileEditStyles";
+import ProfileApi from "../../../api/ProfileApi";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
@@ -28,21 +29,22 @@ const ProfileEditPage = () => {
 
   // 프로필 데이터 로드
   useEffect(() => {
-    // 처음에 유저의 프로필 데이터를 로드합니다.
     const fetchProfile = async () => {
       try {
-        const { data } = await axiosInstance.get("/api/profile/get"); // 유저 정보 가져오기
+        const response = await ProfileApi.getProfile();
+        console.log("Response:", response); // 전체 응답 확인 (디버깅 가능)
+
         setProfile({
-          nickName: data.nickName,
-          introduce: data.introduce,
-          memberImg: data.memberImg,
+          nickName: response.data.nickName,
+          introduce: response.data.introduce,
+          memberImg: response.data.memberImg,
         });
-        setPreview(data.memberImg); // 기존 이미지 미리보기 설정
-        console.log(data);
+        setPreview(response.data.memberImg);
       } catch (error) {
         console.error("프로필 정보를 가져오는 데 실패했습니다.", error);
       }
     };
+
     fetchProfile();
   }, []);
 
@@ -66,19 +68,11 @@ const ProfileEditPage = () => {
 
       // 파일 업로드 처리
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        // 이미지 업로드 요청을 promises 배열에 추가
-        promises.push(
-          axiosInstance.post("/api/profile/image", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-        );
+        promises.push(ProfileApi.uploadProfileImage(file)); // 이미지 업로드 요청
       }
 
       // 프로필 수정 요청을 promises 배열에 추가
-      promises.push(axiosInstance.put("/api/profile/info", profile));
+      promises.push(ProfileApi.updateProfileInfo(profile)); // 프로필 수정 요청
 
       // 두 요청을 동시에 처리
       await Promise.all(promises);
