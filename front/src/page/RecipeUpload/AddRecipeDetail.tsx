@@ -79,14 +79,12 @@ const AddRecipeDetail = () => {
 
     // 재료 데이터 추가
     ingredients.forEach((ingredient, index) => {
-        formData.append(`ingredients[${index}].ingredient`, ingredient.ingredient);
-        formData.append(`ingredients[${index}].amount`, ingredient.amount);
+      formData.append(`ingredients[${index}].ingredient`, ingredient.ingredient);
+      formData.append(`ingredients[${index}].amount`, ingredient.amount);
 
-        ingredients.forEach((ingredient, index) => {
-          formData.append(`ingredients[${index}].ingredient`, ingredient.ingredient);
-          formData.append(`ingredients[${index}].amount`, ingredient.amount);
-        });
+    
     });
+
 
     // 조리 과정 데이터 추가
     steps.forEach((step, index) => {

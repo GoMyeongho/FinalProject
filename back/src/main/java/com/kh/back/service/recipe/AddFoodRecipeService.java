@@ -43,7 +43,6 @@ public class AddFoodRecipeService {
                     })
                     .collect(Collectors.toList());
 
-
             // JSON 데이터 생성
             Map<String, Object> recipeData = new HashMap<>();
             recipeData.put("type", recipeRequest.getType());
@@ -53,10 +52,9 @@ public class AddFoodRecipeService {
             recipeData.put("INFO_WGT", recipeRequest.getInfoWgt());
             recipeData.put("ATT_FILE_NO_MAIN", mainImageUrl);
             recipeData.put("RCP_NA_TIP", recipeRequest.getRcpNaTip());
-            recipeData.put("Ingredients", recipeRequest.getIngredients());
+            recipeData.put("ingredients", recipeRequest.getIngredients());
             recipeData.put("MANUALS", manualsWithUrls);
             recipeData.put("author", memberId);
-
             // JSON 문자열로 변환 후 업로드
             String data = objectMapper.writeValueAsString(recipeData);
             return elasticService.uploadRecipe(data);

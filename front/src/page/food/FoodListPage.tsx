@@ -165,7 +165,7 @@ const FoodListPage: React.FC = () => {
   const handleSelectFood = (id: string) => {
     // 기존에는 /foodrecipes/{id}로 이동했으나,
     // 이제는 type을 포함하여 /foodrecipes/{type}/{id}로 이동합니다.
-    navigate(`/recipe/detail/${id}/${recipeType}`);
+    navigate(`/foodrecipe/detail/${id}/food`);
   };
 
   // -------------------- 예시 추천 레시피 데이터 (테스트용) --------------------

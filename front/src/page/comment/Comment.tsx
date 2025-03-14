@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { AxiosError } from 'axios';
 import { Box, List, Divider, TextField, Button, Typography, Pagination } from '@mui/material';
 import axiosInstance from '../../api/AxiosInstance';
 
@@ -60,9 +61,13 @@ const Comment: React.FC<CommentSectionProps> = ({ postId }) => {
             }
         } catch (err) {
             console.error('댓글 작성에 실패했습니다.', err);
+    
+            // AxiosError로 타입 가드
+            if (err instanceof AxiosError && err.response && err.response.status === 500) {
+                alert('댓글 작성은 로그인 후 사용 가능합니다.');
+            }
         }
     };
-
     const handleReplySubmit = async (parentCommentId: number, replyContent: string) => {
         if (replyContent.trim() === '') return;
 

@@ -197,7 +197,7 @@ public class ElasticService {
 			log.info("[updateLikesAndReports] Response from Flask: {}", response.getBody());
 
 			// Redis에서 데이터 삭제
-			redisTemplate.execute((RedisCallback<Object>) connection -> {
+			redisTemplate.execute((RedisCallback<Void>) connection -> {
 				connection.flushAll();  // 모든 레디스 데이터를 삭제
 				return null;
 			});

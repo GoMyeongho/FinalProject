@@ -141,7 +141,8 @@ const CocktailListPage: React.FC = () => {
    */
   const handleSelectCocktail = (id: string) => {
     // 상세 페이지의 라우트는 /cocktails/:id 로 구성되어 있습니다.
-    navigate(`/cocktails/${id}`);
+ 
+    navigate(`/cocktailrecipe/detail/${id}/cocktail`);
   };
 
   // -------------------- 임시 추천 레시피 데이터 (테스트용) --------------------

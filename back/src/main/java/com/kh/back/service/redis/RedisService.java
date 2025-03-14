@@ -70,19 +70,39 @@ public class RedisService {
 	}
 
 
+//	public boolean updateRecipeCount(Authentication authentication, String action, String postId, String type, boolean increase) {
+//		try {
+//			String key = action + ":" + postId + ":" + type; // ex) likes:123:recipe 또는 reports:123:recipe
+//			if (increase) {
+//				reActionService.updateAction(authentication, action, postId);
+//				redisTemplate.opsForValue().increment(key, 1); // +1 증가
+//			} else {
+//
+//				String value = Optional.ofNullable((String) redisTemplate.opsForValue().get(key)).orElse("0");
+//				redisTemplate.opsForValue().set(key, value); // null일 경우 0으로 설정
+//				redisTemplate.opsForValue().decrement(key, 1); // -1 감소
+//				reActionService.deleteAction(authentication, action, postId);
+//			}
+//			return true;  // 성공
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return false; // 실패
+//		}
+//	}
+
 	public boolean updateRecipeCount(Authentication authentication, String action, String postId, String type, boolean increase) {
 		try {
 			String key = action + ":" + postId + ":" + type; // ex) likes:123:recipe 또는 reports:123:recipe
 			if (increase) {
-				reActionService.updateAction(authentication, action, postId);
 				redisTemplate.opsForValue().increment(key, 1); // +1 증가
+				log.info("Increased value in Redis for key: {}", key);  // 로그 추가
 				reActionService.updateAction(authentication, action, postId);
 			} else {
-
 				String value = Optional.ofNullable((String) redisTemplate.opsForValue().get(key)).orElse("0");
 				redisTemplate.opsForValue().set(key, value); // null일 경우 0으로 설정
 				redisTemplate.opsForValue().decrement(key, 1); // -1 감소
-				reActionService.deleteAction(authentication, action, postId);
+				log.info("Decreased value in Redis for key: {}", key);  // 로그 추가
+				reActionService.deleteAction(authentication, postId, action);
 			}
 			return true;  // 성공
 		} catch (Exception e) {

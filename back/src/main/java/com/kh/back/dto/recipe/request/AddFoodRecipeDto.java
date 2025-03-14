@@ -13,6 +13,7 @@ public class AddFoodRecipeDto {
     private String rcpPat2;
     private String infoWgt;
     private MultipartFile attFileNoMain;
+
     private String rcpNaTip;
     private List<Ingredients> Ingredients;
     private List<Manual> manuals;

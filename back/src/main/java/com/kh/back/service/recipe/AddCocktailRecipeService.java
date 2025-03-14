@@ -26,7 +26,6 @@ public class AddCocktailRecipeService {
         try {
             String image = firebaseService.uploadImage(recipeRequest.getImage(),recipeRequest.getName());
 
-
             // JSON 데이터 생성\
             Map<String, Object> recipeData = new HashMap<>();
             recipeData.put("type", recipeRequest.getType());
