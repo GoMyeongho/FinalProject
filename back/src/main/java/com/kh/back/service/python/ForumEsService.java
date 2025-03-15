@@ -556,8 +556,14 @@ public class ForumEsService {
      */
     public ForumPostLikeResponseDto togglePostLike(String postId, Long memberId) {
         try {
-            URI uri = new URI(flaskBaseUrl + "/forum/post/" + postId + "/like?memberId=" + memberId);
-            ResponseEntity<String> response = restTemplate.postForEntity(uri, null, String.class);
+            URI uri = new URI(flaskBaseUrl + "/forum/post/" + postId + "/like");
+            String jsonBody = "{\"memberId\": " + memberId + "}";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
             log.info("togglePostLike 응답: {}", response);
 
             return objectMapper.readValue(response.getBody(), ForumPostLikeResponseDto.class);
@@ -570,10 +576,17 @@ public class ForumEsService {
     /**
      * 댓글 좋아요 토글 (commentId는 Integer 그대로)
      */
-    public ForumPostLikeResponseDto toggleCommentLike(Integer commentId, Long memberId) {
+    public ForumPostLikeResponseDto toggleCommentLike(Integer commentId, Long memberId, String postId) {
         try {
-            URI uri = new URI(flaskBaseUrl + "/forum/comment/" + commentId + "/like?memberId=" + memberId);
-            ResponseEntity<String> response = restTemplate.postForEntity(uri, null, String.class);
+            URI uri = new URI(flaskBaseUrl + "/forum/comment/" + commentId + "/like");
+            String jsonBody = "{\"memberId\": " + memberId + ", \"postId\": \"" + postId + "\"}";
+            // 주의: 댓글 좋아요의 경우, 어느 게시글의 댓글인지도 필요하므로 postId를 함께 보냅니다.
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
             log.info("toggleCommentLike 응답: {}", response);
 
             return objectMapper.readValue(response.getBody(), ForumPostLikeResponseDto.class);
@@ -582,4 +595,5 @@ public class ForumEsService {
             return null;
         }
     }
+
 }

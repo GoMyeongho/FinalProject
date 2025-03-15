@@ -2,6 +2,7 @@ package com.kh.back.controller.forum;
 
 import com.kh.back.dto.forum.request.ForumPostCommentRequestDto;
 import com.kh.back.dto.forum.response.ForumPostCommentResponseDto;
+import com.kh.back.dto.forum.response.ForumPostLikeResponseDto;
 import com.kh.back.service.forum.ForumPostCommentService;
 import com.kh.back.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -183,4 +184,5 @@ public class ForumPostCommentController {
         ForumPostCommentResponseDto reply = commentService.replyToPost(postId, requestDto);
         return ResponseEntity.ok(reply);
     }
+
 }

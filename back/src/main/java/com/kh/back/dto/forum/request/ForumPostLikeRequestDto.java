@@ -16,7 +16,7 @@ public class ForumPostLikeRequestDto {
     /**
      * 좋아요 대상 게시글 ID
      */
-    private Integer postId;
+    private String postId; // 기존 Integer -> String 으로 변경
 
     /**
      * 좋아요 대상 댓글 ID

@@ -78,13 +78,12 @@ const CommentList = ({
               ) : (
                 <InlineBlockContainer>
                   <div>
-                    {/* refreshKey를 추가한 key 값 구성 */}
                     {comment.contentJSON &&
                     comment.contentJSON.type === "doc" ? (
                       <ReadOnlyEditor
-                        key={`${JSON.stringify(
-                          comment.contentJSON
-                        )}-${refreshKey}`}
+                        key={`${JSON.stringify(comment.contentJSON)}-${
+                          comment.updatedAt
+                        }`}
                         contentJSON={comment.contentJSON}
                       />
                     ) : (

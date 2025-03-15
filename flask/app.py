@@ -452,27 +452,41 @@ def toggle_forum_post_like(doc_id):
     KR: 특정 게시글에 대해 좋아요를 추가 또는 취소하여 likedBy 배열과 likesCount를 업데이트합니다.
     """
     try:
+        # 기존 코드에서 body에 memberId를 받고 있으므로 그대로 둡니다.
         req_data = request.json
         if not req_data or "memberId" not in req_data:
             return jsonify({"error": "memberId가 필요합니다."}), 400
         member_id = req_data["memberId"]
+
         index_name, _ = get_index_and_mapping("forum_post")
-        post = es.get(index=index_name, id=doc_id)["_source"]
-        liked_by = post.get("likedBy", [])
+        post_data = es.get(index=index_name, id=doc_id)["_source"]
+        liked_by = post_data.get("likedBy", [])
+
+        # 좋아요 추가/취소 로직
         if member_id in liked_by:
             liked_by.remove(member_id)
-            post["likesCount"] = max(post.get("likesCount", 0) - 1, 0)
-            action = "취소"
+            post_data["likesCount"] = max(post_data.get("likesCount", 0) - 1, 0)
+            liked = False
         else:
             liked_by.append(member_id)
-            post["likesCount"] = post.get("likesCount", 0) + 1
-            action = "추가"
-        post["likedBy"] = liked_by
-        post["updatedAt"] = datetime.now(timezone.utc).isoformat()
-        es.index(index=index_name, id=doc_id, body=post)
-        return jsonify({"message": f"좋아요가 {action}되었습니다.", "likesCount": post["likesCount"]}), 200
+            post_data["likesCount"] = post_data.get("likesCount", 0) + 1
+            liked = True
+
+        post_data["likedBy"] = liked_by
+        post_data["updatedAt"] = datetime.now(timezone.utc).isoformat()
+
+        # 수정된 문서 재인덱싱
+        es.index(index=index_name, id=doc_id, body=post_data)
+
+        # **여기서 핵심: liked + totalLikes로 JSON 응답**
+        return jsonify({
+            "liked": liked,
+            "likesCount": post_data["likesCount"]
+        }), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Forum 게시글 신고 처리
 @app.route("/forum/post/<doc_id>/report", methods=["POST"])
@@ -783,6 +797,50 @@ def restore_forum_comment(comment_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/forum/comment/<int:comment_id>/like", methods=["POST"])
+def toggle_forum_comment_like(comment_id):
+    try:
+        req_data = request.json
+        if not req_data or "memberId" not in req_data:
+            return jsonify({"error": "memberId가 필요합니다."}), 400
+        member_id = req_data["memberId"]
+
+        post_id = req_data.get("postId")  # 어느 게시글의 댓글인지 알아야 함
+        index_name, _ = get_index_and_mapping("forum_post")
+        post_data = es.get(index=index_name, id=post_id)["_source"]
+        comments = post_data.get("comments", [])
+
+        for c in comments:
+            if c["id"] == comment_id:
+                # 좋아요 배열 또는 likesCount가 없다면 초기화
+                liked_by = c.get("likedBy", [])
+                if member_id in liked_by:
+                    liked_by.remove(member_id)
+                    c["likesCount"] = max(c.get("likesCount", 0) - 1, 0)
+                    liked = False
+                else:
+                    liked_by.append(member_id)
+                    c["likesCount"] = c.get("likesCount", 0) + 1
+                    liked = True
+                c["likedBy"] = liked_by
+                c["updatedAt"] = datetime.now(timezone.utc).isoformat()
+
+                # 수정된 댓글을 comments 배열에 반영
+                break
+
+        post_data["comments"] = comments
+        post_data["updatedAt"] = datetime.now(timezone.utc).isoformat()
+        es.index(index=index_name, id=post_id, body=post_data)
+
+        return jsonify({
+            "liked": liked,
+            "totalLikes": c["likesCount"]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # Forum 댓글 신고 처리
 @app.route("/forum/comment/<int:comment_id>/report", methods=["POST"])
 def report_forum_comment(comment_id):
@@ -916,7 +974,7 @@ def search_forum_category():
         # Use a term query on the keyword sub-field for an exact match.
         body = {
             "query": {
-                "term": {"title.keyword": title}
+                "match_phrase": {"title": title}
             }
         }
         res = es.search(index=index_name, body=body)

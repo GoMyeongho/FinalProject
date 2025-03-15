@@ -132,13 +132,5 @@ public class ForumPostCommentService {
         return forumEsService.restoreComment(commentId);
     }
 
-    /**
-     * 댓글 좋아요 수 증가
-     * KR: 댓글 좋아요 수 증가를 ElasticService를 통해 처리합니다.
-     */
-    @Transactional
-    public void incrementCommentLikes(Integer commentId) {
-        log.info("댓글 ID: {} 좋아요 증가 요청", commentId);
-        forumEsService.incrementCommentLikes(commentId);
-    }
+
 }

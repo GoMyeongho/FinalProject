@@ -29,10 +29,12 @@ public class ForumPostLikeService {
      *
      * @param commentId 댓글 ID
      * @param memberId  요청 사용자 ID
+     * @param postId    댓글이 속한 게시글의 ID
      * @return 좋아요 결과 DTO
      */
     @Transactional
-    public ForumPostLikeResponseDto toggleCommentLike(Integer commentId, Long memberId) {
-        return forumEsService.toggleCommentLike(commentId, memberId);
+    public ForumPostLikeResponseDto toggleCommentLike(Integer commentId, Long memberId, String postId) {
+        return forumEsService.toggleCommentLike(commentId, memberId, postId);
     }
+
 }
